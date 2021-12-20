@@ -84,9 +84,14 @@ type provider struct {
 
 // Init .
 func (p *provider) Init(ctx servicehub.Context) error {
+	logger := NewLogger(p.Log)
 	options := []elastic.ClientOptionFunc{
 		elastic.SetURL(strings.Split(p.Cfg.URLs, ",")...),
 		elastic.SetSniff(false),
+		elastic.SetGzip(true),
+		elastic.SetTraceLog(logger),
+		elastic.SetErrorLog(logger),
+		elastic.SetInfoLog(logger),
 	}
 	if p.Cfg.Security && (p.Cfg.Username != "" || p.Cfg.Password != "") {
 		options = append(options, elastic.SetBasicAuth(p.Cfg.Username, p.Cfg.Password))
